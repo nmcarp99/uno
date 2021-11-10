@@ -153,7 +153,7 @@ io.on("connection", function(socket) {
       updateCards(socket.room);
     }
 
-    nextTurn();
+    nextTurn(socket);
   });
 
   socket.on("draw", () => {
