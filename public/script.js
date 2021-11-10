@@ -1,16 +1,14 @@
-const colors = {
-  Y: "yellow",
-  G: "green",
-  B: "blue",
-  R: "red",
-  W: "black"
-};
-
 var username;
 var room;
 
 function clickHand(handIndex) {
   socket.emit("clickHand", handIndex);
+}
+
+function generateCardHolder(card, index) {
+  return (
+    "<img class='cardHolder' src='/images/" + card + ".png' " + (index != undefined ? "onclick='clickHand(" + index + ");' " : "") + "/>"
+  );
 }
 
 while (room === undefined || room === null || room.length == 0) {
@@ -51,14 +49,10 @@ socket.on("updateCards", data => {
   let output = "";
 
   for (var i = 0; i < data.hand.length; i++) {
-    output +=
-      "<div class='cardHolder' style='background: " + colors[data.hand[i][0]] + "' onclick='clickHand(" +
-      i +
-      ");'><div class='colorCardEllipse'></div></div>";
+    output += generateCardHolder(data.hand[i], i);
   }
 
-  document.getElementById("discard").innerHTML = data.discard;
-  document.getElementById("discard").style.background = colors[data.discard[0]];
+  document.getElementById("discard").innerHTML = generateCardHolder(data.discard);
 
   document.getElementById("hand").innerHTML = output;
 });

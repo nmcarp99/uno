@@ -10,6 +10,13 @@ var deck = require("./deck");
 
 var leaders = {};
 
+function nextTurn(socket) {
+  socket.drawn = false;
+  
+  leaders[socket.room].turn =
+      (leaders[socket.room].turn + 1) % getUsersInRoom(socket.room).length;
+}
+
 function checkCards(card1, card2) {
   return (
     card1[0] == "W" ||
@@ -125,6 +132,8 @@ io.on("connection", function(socket) {
     }
 
     socket.playerIndex = usersInRoom.length - 1;
+    
+    socket.drawn = false;
 
     io.to(socket.room).emit("updatePlayers", usersInRoom);
   });
@@ -144,8 +153,7 @@ io.on("connection", function(socket) {
       updateCards(socket.room);
     }
 
-    leaders[socket.room].turn =
-      (leaders[socket.room].turn + 1) % getUsersInRoom(socket.room).length;
+    nextTurn();
   });
 
   socket.on("draw", () => {
@@ -166,6 +174,7 @@ io.on("connection", function(socket) {
 
   socket.on("disconnect", () => {
     io.to(socket.room).emit("playerLeft");
+    leaders[socket.room] = undefined;
   });
 });
 
