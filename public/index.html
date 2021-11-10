@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Play UNO</title>
+
+    <link rel="stylesheet" href="index.css" />
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <div class="header">
+      <h1>
+        Play UNO
+      </h1>
+      <h1 id="roomcode">
+      </h1>
+    </div>
+    <div class="mainContent">
+      <center>
+        <div class="cardHolder" id="discard">discard</div>
+        <div class="cardHolder" onclick="socket.emit('draw')">deck</div>
+      </center>
+      <div id="users"></div>
+    </div>
+    <div class="hand">
+      <center id="hand">
+      </center>
+    </div>
+  </body>
+</html>
