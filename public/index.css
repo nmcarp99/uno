@@ -1,19 +1,20 @@
 body {
   margin: 0;
-  background: radial-gradient(at bottom right, #A8A8A8, #383838);
+  /*background: radial-gradient(at bottom right, #A8A8A8, #383838);*/
+  background: radial-gradient(at bottom right, #00f83e, #00780e);
   height: 100vh;
 }
 .header {
   width: 100%;
-  height: 60px;
-  background: #950000;
+  background: whitesmoke;
 }
 .header h1 {
   margin: 0;
-  line-height: 60px;
-  color: white;
+  color: #333;
   font-family: arial;
+  font-size: 50px;
   text-align: center;
+  padding: 10px;
 }
 .header h1 + h1 {
   float: right;
@@ -32,6 +33,8 @@ body {
   margin: 10px;
   display: inline-block;
   padding: 0;
+  box-shadow: black 5px 5px 5px;
+  border-radius: 20px;
 }
 .hand {
   position: fixed;
@@ -56,4 +59,51 @@ body {
   font-size: 20px;
   padding: 15px;
   font-family: arial;
+}
+#users h1 {
+  text-align: center;
+  font-family: arial;
+  color: white;
+  margin: 0;
+}
+.drag {
+  opacity: 0;
+}
+.colorChooser {
+  width: 50vw;
+  height: 50vh;
+  padding: 20px;
+  background-color: white;
+  position: fixed;
+  top: -60vh;
+  left: 25vw;
+  box-shadow: black 5px 5px 5px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  z-index: 1000000;
+}
+.colorChooser h1 {
+  text-align: center;
+  font-family: arial;
+  width: 100%;
+  align-self: flex-start;
+}
+.colorChooser div {
+  width: 45%;
+  height: 35%;
+  transition: all 0.1s ease;
+}
+.colorChooser div:hover {
+  filter: brightness(70%);
+}
+.colorChooser div:active {
+  filter: brightness(50%);
+}
+#chat {
+  width: 25%;
+  height: 250px;
+  background: white;
 }

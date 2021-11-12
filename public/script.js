@@ -1,14 +1,42 @@
+var draggedElement;
 var username;
 var room;
 
-function clickHand(handIndex) {
-  socket.emit("clickHand", handIndex);
+function clickHand(id) {
+  socket.emit("clickHand", id);
 }
 
-function generateCardHolder(card, index) {
-  return (
-    "<img class='cardHolder' src='/images/" + card + ".png' " + (index != undefined ? "onclick='clickHand(" + index + ");' " : "") + "/>"
-  );
+function sendColor(colorIndex) {
+  socket.emit("setColor", colorIndex);
+  $('.colorChooser').animate({
+    top: "-60vh"
+  });
+}
+
+function generateCardHolder(card, cursor, index) {
+  let object = document.createElement("img");
+
+  object.classList.add("cardHolder");
+
+  object.style.cursor = cursor;
+  object.src = "/images/" + card + ".png";
+  object.id = index;
+
+  object.onclick = e => {
+    clickHand(e.srcElement.id);
+  };
+
+  object.addEventListener("dragstart", e => {
+    draggedElement = e.srcElement;
+    object.classList.add("drag");
+  });
+
+  object.addEventListener("dragend", () => {
+    draggedElement = undefined;
+    object.classList.remove("drag");
+  });
+
+  return object;
 }
 
 while (room === undefined || room === null || room.length == 0) {
@@ -27,34 +55,69 @@ socket.emit("room", room);
 
 window.addEventListener("load", () => {
   document.getElementById("roomcode").innerHTML = room;
+
+  let discard = document.getElementById("discard");
+
+  discard.addEventListener("dragover", e => {
+    e.preventDefault();
+    e.dataTransfer.effectAllowed = "move";
+  });
+
+  discard.addEventListener("drop", () => {
+    clickHand(draggedElement.id);
+  });
 });
 
-socket.on("updatePlayers", players => {
-  let output = "";
+socket.on("updatePlayers", data => {
+  let players = data.players;
+  let turn = data.turn;
+  let output = "<h1>Players</h1>";
 
   for (var i = 0; i < players.length; i++) {
-    output += players[i] + "<br>";
+    if (turn === i) output += "<span style='font-weight: bolder'>";
+    output += players[i];
+    if (turn === i) output += " &#x25cf;</span>";
+    output += "<br>";
   }
 
   document.getElementById("users").innerHTML = output;
-
-  if (players.length == 1) {
-    while (!confirm("Start the Game?")) {}
-
-    socket.emit("start");
-  }
 });
 
 socket.on("updateCards", data => {
-  let output = "";
+  let hand = document.getElementById("hand");
+
+  hand.innerHTML = "";
 
   for (var i = 0; i < data.hand.length; i++) {
-    output += generateCardHolder(data.hand[i], i);
+    hand.appendChild(generateCardHolder(data.hand[i], "grab", i));
   }
 
-  document.getElementById("discard").innerHTML = generateCardHolder(data.discard);
+  let discard = document.getElementById("discard");
 
-  document.getElementById("hand").innerHTML = output;
+  if (data.discard[0] == "W") { // if a wild is on top of the discard pile
+    let colorOptions = {
+      "R": "red",
+      "G": "green",
+      "B": "blue",
+      "Y": "yellow"
+    };
+    
+    console.log("asdf");
+    console.log(colorOptions[data.color]);
+    
+    discard.style.border = colorOptions[data.color] + " 5px solid";
+  } else {
+    discard.style.border = "";
+  }
+  
+  discard.src = "/images/" + data.discard + ".png";
+  discard.style.opacity = "";
+});
+
+socket.on("pickColor", () => {
+  $(".colorChooser").animate({
+    top: "25vh"
+  });
 });
 
 socket.on("started", () => {
@@ -66,3 +129,13 @@ socket.on("playerLeft", () => {
   alert("Someone left the game...");
   location.reload();
 });
+
+socket.on("disconnect", () => {
+  alert("You have been disconnected from the server...");
+  location.reload();
+});
+
+socket.on("gameOver", winner => {
+  alert(winner + " Won!");
+  location.reload();
+})
