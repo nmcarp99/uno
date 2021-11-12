@@ -10,8 +10,43 @@ var deck = require("./deck");
 
 var gameData = {};
 
+function resetGameData(socket) {
+  gameData[socket.room] = {};
+  gameData[socket.room].startID = socket.id;
+  gameData[socket.room].deck = deck.newDeck();
+  gameData[socket.room].discard = draw(socket.room);
+  gameData[socket.room].gameStarted = false;
+  gameData[socket.room].skipped = false;
+  gameData[socket.room].reversed = false;
+  gameData[socket.room].turnDirection = 1;
+  gameData[socket.room].color = undefined;
+
+  updateUsers(socket.room);
+  updateCards(socket.room);
+}
+
+function resetUsers(room) {
+  let sockets = getUsersInRoom(room);
+
+  for (let socket of sockets) {
+    socket.hand = [];
+
+    for (var i = 0; i < 7; i++) {
+      socket.hand.push(draw(socket.room));
+    }
+
+    socket.playerIndex = sockets.length - 1;
+
+    socket.drawn = false;
+
+    updateUsers(socket.room);
+  }
+}
+
 function start(socket) {
   if (socket.id != gameData[socket.room].startID) return;
+  
+  resetUsers(socket.room);
 
   gameData[socket.room].gameStarted = true;
 
@@ -163,31 +198,12 @@ io.on("connection", function(socket) {
 
     socket.room = data;
     socket.join(data);
-
-    let usersInRoom = getUserNamesInRoom(socket.room);
-
-    if (usersInRoom.length == 1) {
-      gameData[socket.room] = {};
-      gameData[socket.room].startID = socket.id;
-      gameData[socket.room].deck = deck.newDeck();
-      gameData[socket.room].discard = draw(socket.room);
-      gameData[socket.room].gameStarted = false;
-      gameData[socket.room].skipped = false;
-      gameData[socket.room].reversed = false;
-      gameData[socket.room].turnDirection = 1;
+    
+    let sockets = getUsersInRoom(socket.room);
+    
+    if (sockets.length == 1) {
+      resetGameData(socket);
     }
-
-    socket.hand = [];
-
-    for (var i = 0; i < 7; i++) {
-      socket.hand.push(draw(socket.room));
-    }
-
-    socket.playerIndex = usersInRoom.length - 1;
-
-    socket.drawn = false;
-
-    updateUsers(socket.room);
   });
 
   socket.on("setColor", colorIndex => {
@@ -236,7 +252,7 @@ io.on("connection", function(socket) {
       updateCards(socket.room);
 
       if (socket.hand.length == 0) {
-        io.to(socket.room).emit("gameOver", socket.name);
+        io.to(socket.room).emit("", socket.name);
       }
     }
   });
