@@ -7,7 +7,7 @@
 
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <!--<script src="script.js"></script>-->
+    <script src="script.js"></script>
   </head>
   <body>
     <div class="colorChooser">
@@ -26,7 +26,11 @@
       <h1 id="roomcode"></h1>
     </div>
     <div class="mainContent">
-      <div id="chat"></div>
+      <div class="contentBox chat" id="chat">
+        <h1>Chat</h1>
+        <div class="content" id="chatContent"></div>
+        <input id="message" type="text" placeholder="Type message here...">
+      </div>
       <img
         class="cardHolder"
         id="discard"
@@ -39,7 +43,10 @@
         src="/images/deck.png"
         onclick="socket.emit('draw')"
       />
-      <div id="users"></div>
+      <div class="contentBox" id="users">
+        <h1>Users</h1>
+        <div class="content" id="usersContent"></div>
+      </div>
     </div>
     <div class="hand">
       <center id="hand"></center>

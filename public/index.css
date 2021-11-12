@@ -23,6 +23,8 @@ body {
   top: 0;
 }
 .mainContent {
+  display: flex;
+  justify-content: space-around;
   margin: 40px;
 }
 .cardHolder {
@@ -47,20 +49,20 @@ body {
   width: 150px;
   height: 200px;
 }
-#users {
-  width: 300px;
+.contentBox {
+  width: 25%;
   height: 250px;
-  position: fixed;
-  top: 100px;
-  right: 20px;
   background: transparent;
   border: white 5px solid;
   color: white;
   font-size: 20px;
-  padding: 15px;
   font-family: arial;
 }
-#users h1 {
+.contentBox .content {
+  width: calc(100% - 40px);
+  padding: 20px;
+}
+.contentBox h1 {
   text-align: center;
   font-family: arial;
   color: white;
@@ -102,8 +104,18 @@ body {
 .colorChooser div:active {
   filter: brightness(50%);
 }
-#chat {
-  width: 25%;
-  height: 250px;
-  background: white;
+.chat {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.chat .content {
+  background-color: whitesmoke;
+  color: black;
+  flex: 1;
+  overflow-y: scroll;
+  font-size: 15px;
+}
+.chat input {
+  margin-top: auto;
 }

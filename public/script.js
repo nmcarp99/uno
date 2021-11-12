@@ -55,6 +55,15 @@ socket.emit("room", room);
 
 window.addEventListener("load", () => {
   document.getElementById("roomcode").innerHTML = room;
+  
+  document.getElementById("message").addEventListener("keydown", (e) => {
+    if (e.code == "Enter") {
+      let message = document.getElementById("message");
+      
+      socket.emit("message", message.value);
+      message.value = "";
+    }
+  });
 
   let discard = document.getElementById("discard");
 
@@ -71,7 +80,7 @@ window.addEventListener("load", () => {
 socket.on("updatePlayers", data => {
   let players = data.players;
   let turn = data.turn;
-  let output = "<h1>Players</h1>";
+  let output = "";
 
   for (var i = 0; i < players.length; i++) {
     if (turn === i) output += "<span style='font-weight: bolder'>";
@@ -80,7 +89,7 @@ socket.on("updatePlayers", data => {
     output += "<br>";
   }
 
-  document.getElementById("users").innerHTML = output;
+  document.getElementById("usersContent").innerHTML = output;
 });
 
 socket.on("updateCards", data => {
@@ -112,6 +121,12 @@ socket.on("updateCards", data => {
   
   discard.src = "/images/" + data.discard + ".png";
   discard.style.opacity = "";
+});
+
+socket.on("message", (data) => {
+  let message = document.getElementById("chatContent");
+  
+  message.innerHTML = data + "<br>" + message.innerHTML;
 });
 
 socket.on("pickColor", () => {

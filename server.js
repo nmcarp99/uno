@@ -254,6 +254,10 @@ io.on("connection", function(socket) {
 
     updateCards(socket.room);
   });
+  
+  socket.on("message", (message) => {
+    io.to(socket.room).emit("message", socket.name + ": " + message);
+  });
 
   socket.on("disconnect", function() {
     io.to(socket.room).emit("playerLeft");
