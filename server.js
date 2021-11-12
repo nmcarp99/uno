@@ -19,6 +19,10 @@ function start(socket) {
 
   updateCards(socket.room);
   updateUsers(socket.room);
+
+  if (gameData[socket.room].discard[0] == "W") {
+    socket.emit("pickColor");
+  }
 }
 
 function nextTurn(socket) {
@@ -191,12 +195,13 @@ io.on("connection", function(socket) {
       !gameData[socket.room].gameStarted ||
       gameData[socket.room].turn != socket.playerIndex ||
       gameData[socket.room].color != undefined
-    ) return;
-    
+    )
+      return;
+
     let colorOptions = ["R", "G", "B", "Y"];
-    
+
     gameData[socket.room].color = colorOptions[colorIndex];
-    
+
     nextTurn(socket);
   });
 
@@ -207,7 +212,13 @@ io.on("connection", function(socket) {
     )
       return;
 
-    if (checkCards(gameData[socket.room].discard, socket.hand[handIndex], gameData[socket.room].color)) {
+    if (
+      checkCards(
+        gameData[socket.room].discard,
+        socket.hand[handIndex],
+        gameData[socket.room].color
+      )
+    ) {
       gameData[socket.room].discard = socket.hand[handIndex];
 
       gameData[socket.room].skipped = false;
@@ -223,7 +234,7 @@ io.on("connection", function(socket) {
       }
 
       updateCards(socket.room);
-      
+
       if (socket.hand.length == 0) {
         io.to(socket.room).emit("gameOver", socket.name);
       }
@@ -241,7 +252,13 @@ io.on("connection", function(socket) {
     let possibleToPlay = false;
 
     for (var i = 0; i < socket.hand.length; i++) {
-      if (checkCards(gameData[socket.room].discard, socket.hand[i], gameData[socket.room].color)) {
+      if (
+        checkCards(
+          gameData[socket.room].discard,
+          socket.hand[i],
+          gameData[socket.room].color
+        )
+      ) {
         possibleToPlay = true;
       }
     }
@@ -254,8 +271,8 @@ io.on("connection", function(socket) {
 
     updateCards(socket.room);
   });
-  
-  socket.on("message", (message) => {
+
+  socket.on("message", message => {
     io.to(socket.room).emit("message", socket.name + ": " + message);
   });
 

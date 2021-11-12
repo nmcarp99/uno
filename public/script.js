@@ -54,6 +54,7 @@ socket.emit("username", username);
 socket.emit("room", room);
 
 window.addEventListener("load", () => {
+  document.getElementById("username").innerHTML = username;
   document.getElementById("roomcode").innerHTML = room;
   
   document.getElementById("message").addEventListener("keydown", (e) => {
