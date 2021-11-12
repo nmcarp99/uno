@@ -1,27 +1,26 @@
 body {
   margin: 0;
-  background: radial-gradient(at bottom right, #A8A8A8, #383838);
+  /*background: radial-gradient(at bottom right, #A8A8A8, #383838);*/
+  background: radial-gradient(at bottom right, #00d319, #00780e);
   height: 100vh;
 }
 .header {
   width: 100%;
-  height: 60px;
-  background: #950000;
+  background: whitesmoke;
+  display: flex;
+  justify-content: space-between;
 }
 .header h1 {
   margin: 0;
-  line-height: 60px;
-  color: white;
+  color: #333;
   font-family: arial;
+  font-size: 50px;
   text-align: center;
-}
-.header h1 + h1 {
-  float: right;
-  position: fixed;
-  right: 20px;
-  top: 0;
+  padding: 10px 30px;
 }
 .mainContent {
+  display: flex;
+  justify-content: space-around;
   margin: 40px;
 }
 .cardHolder {
@@ -32,6 +31,8 @@ body {
   margin: 10px;
   display: inline-block;
   padding: 0;
+  box-shadow: black 5px 5px 5px;
+  border-radius: 20px;
 }
 .hand {
   position: fixed;
@@ -44,16 +45,76 @@ body {
   width: 150px;
   height: 200px;
 }
-#users {
-  width: 300px;
+.contentBox {
+  width: 25%;
   height: 250px;
-  position: fixed;
-  top: 100px;
-  right: 20px;
   background: transparent;
   border: white 5px solid;
   color: white;
   font-size: 20px;
-  padding: 15px;
   font-family: arial;
+}
+.contentBox .content {
+  width: calc(100% - 40px);
+  padding: 20px;
+}
+.contentBox h1 {
+  text-align: center;
+  font-family: arial;
+  color: white;
+  margin: 0;
+  border-bottom: 5px solid white;
+}
+.drag {
+  opacity: 0;
+}
+.colorChooser {
+  width: 50vw;
+  height: 50vh;
+  padding: 20px;
+  background-color: white;
+  position: fixed;
+  top: -60vh;
+  left: 25vw;
+  box-shadow: black 5px 5px 5px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  z-index: 1000000;
+}
+.colorChooser h1 {
+  text-align: center;
+  font-family: arial;
+  width: 100%;
+  align-self: flex-start;
+}
+.colorChooser div {
+  width: 45%;
+  height: 35%;
+  transition: all 0.1s ease;
+  border-radius: 20px;
+}
+.colorChooser div:hover {
+  filter: brightness(70%);
+}
+.colorChooser div:active {
+  filter: brightness(50%);
+}
+.chat {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.chat .content {
+  background-color: whitesmoke;
+  color: black;
+  flex: 1;
+  font-size: 15px;
+  overflow-y: scroll;
+  line-height: 30px;
+}
+.chat input {
+  margin-top: auto;
 }

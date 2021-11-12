@@ -5,27 +5,52 @@
 
     <link rel="stylesheet" href="index.css" />
 
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
   </head>
   <body>
+    <div class="colorChooser">
+      <h1>
+        Select Color
+      </h1>
+      <div onclick="sendColor(0)" style="background: red;"></div>
+      <div onclick="sendColor(1)" style="background: green;"></div>
+      <div onclick="sendColor(2)" style="background: blue;"></div>
+      <div onclick="sendColor(3)" style="background: yellow;"></div>
+    </div>
     <div class="header">
+      <h1 id="username"></h1>
       <h1>
         Play UNO
       </h1>
-      <h1 id="roomcode">
-      </h1>
+      <h1 id="roomcode"></h1>
     </div>
     <div class="mainContent">
-      <center>
-        <div class="cardHolder" id="discard">discard</div>
-        <img class="cardHolder" src="/images/deck.png" onclick="socket.emit('draw')" />
-      </center>
-      <div id="users"></div>
+      <div class="contentBox chat" id="chat">
+        <h1>Chat</h1>
+        <div class="content" id="chatContent"></div>
+        <input id="message" type="text" placeholder="Type message here...">
+      </div>
+      <img
+        class="cardHolder"
+        id="discard"
+        style="cursor: default; opacity: 0;"
+        src="/images/deck.png"
+      />
+      <img
+        class="cardHolder"
+        style="cursor: pointer;"
+        src="/images/deck.png"
+        onclick="socket.emit('draw')"
+      />
+      <div class="contentBox" id="users">
+        <h1>Users</h1>
+        <div class="content" id="usersContent"></div>
+      </div>
     </div>
     <div class="hand">
-      <center id="hand">
-      </center>
+      <center id="hand"></center>
     </div>
   </body>
 </html>
