@@ -10,9 +10,16 @@ var deck = require("./deck");
 
 var gameData = {};
 
-function resetGameData(socket) {
+function resetGame(socket) {
+  resetGameData(socket, gameData[socket.room].startID);
+  resetUsers(socket.room);
+
+  io.to(socket.room).emit("reset", socket.name);
+}
+
+function resetGameData(socket, startID) {
   gameData[socket.room] = {};
-  gameData[socket.room].startID = socket.id;
+  gameData[socket.room].startID = startID === undefined ? socket.id : startID;
   gameData[socket.room].deck = deck.newDeck();
   gameData[socket.room].discard = draw(socket.room);
   gameData[socket.room].gameStarted = false;
@@ -22,11 +29,12 @@ function resetGameData(socket) {
   gameData[socket.room].color = undefined;
 
   updateUsers(socket.room);
-  updateCards(socket.room);
 }
 
 function resetUsers(room) {
   let sockets = getUsersInRoom(room);
+
+  var socketIndex = 0;
 
   for (let socket of sockets) {
     socket.hand = [];
@@ -35,17 +43,19 @@ function resetUsers(room) {
       socket.hand.push(draw(socket.room));
     }
 
-    socket.playerIndex = sockets.length - 1;
+    socket.playerIndex = socketIndex;
 
     socket.drawn = false;
 
     updateUsers(socket.room);
+
+    socketIndex++;
   }
 }
 
 function start(socket) {
   if (socket.id != gameData[socket.room].startID) return;
-  
+
   resetUsers(socket.room);
 
   gameData[socket.room].gameStarted = true;
@@ -84,7 +94,12 @@ function nextTurn(socket) {
     }
   }
 
-  if (discard[1] == "S" && !gameData[socket.room].skipped) {
+  if (
+    (discard[1] == "S" && !gameData[socket.room].skipped) ||
+    (discard[1] == "R" &&
+      !gameData[socket.room].skipped &&
+      getUsersInRoom(socket.room).length <= 2)
+  ) {
     gameData[socket.room].skipped = true;
     nextTurn(newTurnUser);
   }
@@ -103,9 +118,22 @@ function checkCards(card1, card2, color) {
 }
 
 function updateUsers(room) {
+  let sockets = getUsersInRoom(room);
+
+  let cardsLeft = [];
+
+  for (let socket of sockets) {
+    if (socket.hand && gameData[room].gameStarted == true) {
+      cardsLeft.push(socket.hand.length);
+    } else {
+      cardsLeft.push(undefined);
+    }
+  }
+
   io.to(room).emit("updatePlayers", {
     players: getUserNamesInRoom(room),
-    turn: gameData[room].turn
+    turn: gameData[room].turn,
+    cardsLeft: cardsLeft
   });
 }
 
@@ -198,12 +226,14 @@ io.on("connection", function(socket) {
 
     socket.room = data;
     socket.join(data);
-    
+
     let sockets = getUsersInRoom(socket.room);
-    
+
     if (sockets.length == 1) {
       resetGameData(socket);
     }
+
+    updateUsers(socket.room);
   });
 
   socket.on("setColor", colorIndex => {
@@ -250,9 +280,10 @@ io.on("connection", function(socket) {
       }
 
       updateCards(socket.room);
+      updateUsers(socket.room);
 
       if (socket.hand.length == 0) {
-        io.to(socket.room).emit("", socket.name);
+        resetGame(socket);
       }
     }
   });
