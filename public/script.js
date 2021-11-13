@@ -1,6 +1,7 @@
 var draggedElement;
 var username;
 var room;
+var playerIndex;
 
 function clickHand(id) {
   socket.emit("clickHand", id);
@@ -8,7 +9,7 @@ function clickHand(id) {
 
 function sendColor(colorIndex) {
   socket.emit("setColor", colorIndex);
-  $('.colorChooser').animate({
+  $(".colorChooser").animate({
     top: "-60vh"
   });
 }
@@ -56,11 +57,11 @@ socket.emit("room", room);
 window.addEventListener("load", () => {
   document.getElementById("username").innerHTML = username;
   document.getElementById("roomcode").innerHTML = room;
-  
-  document.getElementById("message").addEventListener("keydown", (e) => {
+
+  document.getElementById("message").addEventListener("keydown", e => {
     if (e.code == "Enter") {
       let message = document.getElementById("message");
-      
+
       socket.emit("message", message.value);
       message.value = "";
     }
@@ -80,12 +81,22 @@ window.addEventListener("load", () => {
 
 socket.on("updatePlayers", data => {
   let players = data.players;
+  let cardCounts = data.cardsLeft;
   let turn = data.turn;
   let output = "";
 
+  if (playerIndex === undefined) {
+    playerIndex = players.length - 1;
+  }
+
+  if (turn == playerIndex && players.length != 1) {
+    //alert("Your Turn!");
+  }
+
   for (var i = 0; i < players.length; i++) {
-    if (turn === i) output += "<span style='font-weight: bolder'>";
+    if (turn === i) output += "<span style='font-weight: bolder; text-decoration: underline;'>";
     output += players[i];
+    if (cardCounts[i]) output += " (" + cardCounts[i] + ")";
     if (turn === i) output += " &#x25cf;</span>";
     output += "<br>";
   }
@@ -104,29 +115,30 @@ socket.on("updateCards", data => {
 
   let discard = document.getElementById("discard");
 
-  if (data.discard[0] == "W") { // if a wild is on top of the discard pile
+  if (data.discard[0] == "W") {
+    // if a wild is on top of the discard pile
     let colorOptions = {
-      "R": "red",
-      "G": "green",
-      "B": "blue",
-      "Y": "yellow"
+      R: "red",
+      G: "green",
+      B: "blue",
+      Y: "yellow"
     };
-    
+
     console.log("asdf");
     console.log(colorOptions[data.color]);
-    
+
     discard.style.border = colorOptions[data.color] + " 5px solid";
   } else {
     discard.style.border = "";
   }
-  
+
   discard.src = "/images/" + data.discard + ".png";
   discard.style.opacity = "";
 });
 
-socket.on("message", (data) => {
+socket.on("message", data => {
   let message = document.getElementById("chatContent");
-  
+
   message.innerHTML = data + "<br>" + message.innerHTML;
 });
 
@@ -151,7 +163,9 @@ socket.on("disconnect", () => {
   location.reload();
 });
 
-socket.on("gameOver", winner => {
+socket.on("reset", winner => {
   alert(winner + " Won!");
-  location.reload();
-})
+
+  document.getElementById("hand").innerHTML = "";
+  document.getElementById("discard").style.opacity = 0;
+});
