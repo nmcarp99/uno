@@ -113,7 +113,6 @@ body {
   flex: 1;
   font-size: 15px;
   overflow-y: scroll;
-  line-height: 30px;
 }
 .chat input {
   margin-top: auto;

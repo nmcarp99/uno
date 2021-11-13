@@ -139,7 +139,7 @@ socket.on("updateCards", data => {
 socket.on("message", data => {
   let message = document.getElementById("chatContent");
 
-  message.innerHTML = data + "<br>" + message.innerHTML;
+  message.innerHTML = data + "<br><br>" + message.innerHTML;
 });
 
 socket.on("pickColor", () => {
