@@ -2,6 +2,7 @@ var draggedElement;
 var username;
 var room;
 var playerIndex;
+var tabFocused = true;
 
 function clickHand(id) {
   socket.emit("clickHand", id);
@@ -12,6 +13,10 @@ function sendColor(colorIndex) {
   $(".colorChooser").animate({
     top: "-60vh"
   });
+}
+
+function toggleDiscard() {
+  document.getElementById("discard").classList.toggle("dropping");
 }
 
 function generateCardHolder(card, cursor, index) {
@@ -69,6 +74,9 @@ window.addEventListener("load", () => {
 
   let discard = document.getElementById("discard");
 
+  discard.addEventListener("dragenter", toggleDiscard);
+  discard.addEventListener("dragleave", toggleDiscard);
+
   discard.addEventListener("dragover", e => {
     e.preventDefault();
     e.dataTransfer.effectAllowed = "move";
@@ -76,6 +84,7 @@ window.addEventListener("load", () => {
 
   discard.addEventListener("drop", () => {
     clickHand(draggedElement.id);
+    toggleDiscard();
   });
 });
 
@@ -89,12 +98,14 @@ socket.on("updatePlayers", data => {
     playerIndex = players.length - 1;
   }
 
-  if (turn == playerIndex && players.length != 1) {
-    //alert("Your Turn!");
+  if (turn == playerIndex && !tabFocused) {
+    alert("Your Turn!");
   }
 
   for (var i = 0; i < players.length; i++) {
-    if (turn === i) output += "<span style='font-weight: bolder; text-decoration: underline;'>";
+    if (turn === i)
+      output +=
+        "<span style='font-weight: bolder; text-decoration: underline;'>";
     output += players[i];
     if (cardCounts[i]) output += " (" + cardCounts[i] + ")";
     if (turn === i) output += " &#x25cf;</span>";
@@ -168,4 +179,11 @@ socket.on("reset", winner => {
 
   document.getElementById("hand").innerHTML = "";
   document.getElementById("discard").style.opacity = 0;
+});
+
+window.addEventListener("blur", () => {
+  tabFocused = false;
+});
+window.addEventListener("focus", () => {
+  tabFocused = true;
 });
