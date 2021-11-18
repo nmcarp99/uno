@@ -3,6 +3,10 @@ var username;
 var room;
 var playerIndex;
 var tabFocused = true;
+var messagesSent = 0;
+var banned = false;
+var banTimeLeft = 30;
+var banInterval;
 
 function clickHand(id) {
   socket.emit("clickHand", id);
@@ -13,6 +17,19 @@ function sendColor(colorIndex) {
   $(".colorChooser").animate({
     top: "-60vh"
   });
+}
+
+function updateBan() {
+  if (banTimeLeft == 0) {
+    document.getElementById("message").disabled = false;
+    document.getElementById("message").placeholder = "Type message here...";
+    clearInterval(banInterval);
+    banned = false;
+    return;
+  }
+  
+  banTimeLeft--;
+  document.getElementById("message").placeholder = "Please wait " + banTimeLeft + " more seconds...";
 }
 
 function toggleDiscard() {
@@ -65,10 +82,30 @@ window.addEventListener("load", () => {
 
   document.getElementById("message").addEventListener("keydown", e => {
     if (e.code == "Enter") {
+      if (messagesSent > 3) {
+        banTimeLeft = 30;
+        
+        banned = true;
+        
+        document.getElementById("message").disabled = true;
+        document.getElementById("message").value = "";
+        
+        banInterval = setInterval(updateBan, 1000);
+        
+        alert("You have been banned for spamming for 30 seconds.");
+        
+        socket.emit("message", " has been banned for 30 seconds...");
+        return;
+      }
+      
+      if (banned) return;
+      
       let message = document.getElementById("message");
 
       socket.emit("message", message.value);
       message.value = "";
+      
+      messagesSent++;
     }
   });
 
@@ -187,3 +224,7 @@ window.addEventListener("blur", () => {
 window.addEventListener("focus", () => {
   tabFocused = true;
 });
+
+setInterval(() => {
+  messagesSent = 0;
+}, 1000);
