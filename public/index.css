@@ -117,3 +117,6 @@ body {
 .chat input {
   margin-top: auto;
 }
+.dropping {
+  filter: brightness(75%);
+}
