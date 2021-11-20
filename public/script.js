@@ -228,7 +228,7 @@ window.addEventListener("focus", () => {
   tabFocused = true;
 });
 window.addEventListener("beforeunload", event => {
-  event.returnValue = false;
+  event.returnValue = true;
 });
 
 setInterval(() => {
