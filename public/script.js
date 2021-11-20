@@ -227,6 +227,9 @@ window.addEventListener("blur", () => {
 window.addEventListener("focus", () => {
   tabFocused = true;
 });
+window.addEventListener("beforeunload", event => {
+  event.returnValue = false;
+});
 
 setInterval(() => {
   messagesSent = 0;
