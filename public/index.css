@@ -120,3 +120,21 @@ body {
 .dropping {
   filter: brightness(75%);
 }
+.next {
+  padding: 10px 100px;
+  background: none;
+  border: 5px white solid;
+  color:  white;
+  font-size: 20px;
+  transition: all 0.1s ease;
+}
+.next:hover {
+  filter: brightness(80%);
+}
+.next:active {
+  filter: brightness(70%);
+}
+.next:disabled {
+  filter: brightness(60%);
+  background: rgba(255, 255, 255, .5);
+}

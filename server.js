@@ -144,12 +144,15 @@ function updateCards(room) {
     user.emit("updateCards", {
       hand: user.hand,
       discard: gameData[room].discard,
-      color: gameData[room].color
+      color: gameData[room].color,
+      nextAllowed: (gameData[room].turn == user.playerIndex && user.drawn)
     });
   }
 }
 
 function draw(room) {
+  if (gameData[room].deck.length == 0) return "ZZ";
+  
   let topCard = gameData[room].deck[0];
   gameData[room].deck.shift();
   return topCard;
@@ -285,6 +288,16 @@ io.on("connection", function(socket) {
       if (socket.hand.length == 0) {
         resetGame(socket);
       }
+    }
+  });
+
+  socket.on("next", () => {
+    if (!gameData[socket.room].gameStarted) return;
+
+    if (gameData[socket.room].turn == socket.playerIndex && socket.drawn) {
+      // make sure its our turn and we have already drawn
+      
+      nextTurn(socket);
     }
   });
 

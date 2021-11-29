@@ -8,6 +8,10 @@ var banned = false;
 var banTimeLeft = 30;
 var banInterval;
 
+function next() {
+  socket.emit("next");
+}
+
 function addToMessages(data) {
   let message = document.getElementById("chatContent");
 
@@ -158,6 +162,14 @@ socket.on("updatePlayers", data => {
 });
 
 socket.on("updateCards", data => {
+  let next = document.getElementById("next");
+
+  if (data.nextAllowed) {
+    next.disabled = false;
+  } else {
+    next.disabled = true;
+  }
+
   let hand = document.getElementById("hand");
 
   hand.innerHTML = "";
@@ -176,9 +188,6 @@ socket.on("updateCards", data => {
       B: "blue",
       Y: "yellow"
     };
-
-    console.log("asdf");
-    console.log(colorOptions[data.color]);
 
     discard.style.border = colorOptions[data.color] + " 5px solid";
   } else {
