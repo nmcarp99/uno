@@ -22,6 +22,7 @@ body {
   display: flex;
   justify-content: space-around;
   margin: 40px;
+  margin-bottom: 2px;
 }
 .cardHolder {
   width: 175px;
