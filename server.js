@@ -145,14 +145,14 @@ function updateCards(room) {
       hand: user.hand,
       discard: gameData[room].discard,
       color: gameData[room].color,
-      nextAllowed: (gameData[room].turn == user.playerIndex && user.drawn)
+      nextAllowed: gameData[room].turn == user.playerIndex && user.drawn
     });
   }
 }
 
 function draw(room) {
   if (gameData[room].deck.length == 0) return "ZZ";
-  
+
   let topCard = gameData[room].deck[0];
   gameData[room].deck.shift();
   return topCard;
@@ -256,8 +256,9 @@ io.on("connection", function(socket) {
 
   socket.on("clickHand", handIndex => {
     if (
-      !gameData[socket.room].gameStarted ||
-      gameData[socket.room].turn != socket.playerIndex
+      gameData[socket.room] &&
+      (!gameData[socket.room].gameStarted ||
+        gameData[socket.room].turn != socket.playerIndex)
     )
       return;
 
@@ -296,7 +297,7 @@ io.on("connection", function(socket) {
 
     if (gameData[socket.room].turn == socket.playerIndex && socket.drawn) {
       // make sure its our turn and we have already drawn
-      
+
       nextTurn(socket);
     }
   });
