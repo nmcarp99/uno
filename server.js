@@ -1,6 +1,6 @@
 // set leadersocket.gameStarted to true when startin game!!! (dont forget)
 
-const port = 8080;
+const port = process.env.PORT;
 
 var app = require("express")();
 var http = require("http").Server(app);
